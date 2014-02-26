@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ITTIA Phone Book</string>
+    <string name="no_contacts">Use menu to add a contact.</string>
+    <string name="menu_insert">Add Contact</string>
+    <string name="menu_rep_config">Configure Replication</string>
+    <string name="menu_sync">Synchronize</string>
+    <string name="menu_delete">Delete Contact</string>
+    <string name="edit_contact">Edit Contact</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_ring_id">Ring Tone</string>
+    <string name="confirm">Confirm</string>
+    <string name="picture_description">Picture of contact</string>
+    <string-array name="ringtones">
+        <item>Default</item>
+        <item>Bells</item>
+        <item>Horn</item>
+        <item>Chainsaw</item>
+        <item>Rocket</item>
+    </string-array>
+        <string name="heading">Powered by ITTIA DB SQL</string>
+        <string name="contact_picture">Picture</string>
+        <string name="contact_picture_erase">Erase</string>
+        <string name="contact_picture_next">Next</string>
+</resources>
