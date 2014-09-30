@@ -23,10 +23,10 @@ public class ContactEdit extends Activity {
     private ImageView mPictureImage;
     private Long mRowId;
     private PhoneBookDbAdapter mDbHelper;
-    
+
     private boolean pictureChanged;
     private byte[] picture;
-    
+
     private int[] availablePictures;
     private int currentPictureIndex;
 
@@ -38,6 +38,9 @@ public class ContactEdit extends Activity {
         mDbHelper = new PhoneBookDbAdapter(this);
         mDbHelper.open();
 
+        // Show the Up button in the action bar.
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Show info for a single contact.
         setContentView(R.layout.contact_edit);
         setTitle(R.string.edit_contact);
@@ -46,7 +49,6 @@ public class ContactEdit extends Activity {
         mRingIdSpinner = (Spinner) findViewById(R.id.ring_id);
         mPictureImage = (ImageView) findViewById(R.id.picture);
 
-        Button confirmButton = (Button) findViewById(R.id.confirm);
         Button pictureEraseButton = (Button) findViewById(R.id.contact_picture_erase);
         Button pictureNextButton = (Button) findViewById(R.id.contact_picture_next);
 
@@ -81,15 +83,7 @@ public class ContactEdit extends Activity {
 
         // Load contact record from the database into the member views.
         populateFields();
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(RESULT_OK);
-                finish();
-            }
 
-        });
-        
         pictureEraseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -141,7 +135,8 @@ public class ContactEdit extends Activity {
         pictureChanged = false;
 
         if (mRowId == null) {
-            mNameText.setText("");
+            mNameText.setText(getString(R.string.default_contact_name));
+            mNameText.selectAll();
             mRingIdSpinner.setSelection(0);
             showPicture(null);
         }
@@ -190,6 +185,10 @@ public class ContactEdit extends Activity {
     private void saveState() {
         String name = mNameText.getText().toString();
         Long ring_id = mRingIdSpinner.getSelectedItemId() == 0 ? null : mRingIdSpinner.getSelectedItemId() - 1;
+
+        if (name.isEmpty()) {
+            name = getString(R.string.default_contact_name);
+        }
 
         if (mRowId == null) {
             long id = mDbHelper.createContact(name, ring_id);

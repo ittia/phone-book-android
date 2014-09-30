@@ -7,7 +7,9 @@
     <string name="menu_sync">Synchronize</string>
     <string name="menu_delete">Delete Contact</string>
     <string name="edit_contact">Edit Contact</string>
+    <string name="message_sync_complete">Synchronization Complete</string>
     <string name="contact_name">Name</string>
+    <string name="default_contact_name">New Contact</string>
     <string name="contact_ring_id">Ring Tone</string>
     <string name="confirm">Confirm</string>
     <string name="picture_description">Picture of contact</string>
