@@ -20,6 +20,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+/**
+ * A simple contact list activity with support for database synchronization.
+ */
 public class IttiaPhoneBookActivity extends ListActivity {
     private static final int ACTIVITY_CREATE=0;
     private static final int ACTIVITY_EDIT=1;
@@ -37,9 +40,13 @@ public class IttiaPhoneBookActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.phonebook_list);
+
+        // Connect to the database and fetch the contact list.
         mDbHelper = new PhoneBookDbAdapter(this);
         mDbHelper.open();
         fillData();
+
+        // Add a context menu to the list.
         registerForContextMenu(getListView());
     }
 

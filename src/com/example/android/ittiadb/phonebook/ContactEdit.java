@@ -14,63 +14,73 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+/**
+ * A simple contact editing activity.
+ */
 public class ContactEdit extends Activity {
-	private EditText mNameText;
-	private Spinner mRingIdSpinner;
-	private ImageView mPictureImage;
-	private Long mRowId;
-	private PhoneBookDbAdapter mDbHelper;
-	
-	private boolean pictureChanged;
-	private byte[] picture;
-	
-	private int[] availablePictures;
-	private int currentPictureIndex;
+    private EditText mNameText;
+    private Spinner mRingIdSpinner;
+    private ImageView mPictureImage;
+    private Long mRowId;
+    private PhoneBookDbAdapter mDbHelper;
+    
+    private boolean pictureChanged;
+    private byte[] picture;
+    
+    private int[] availablePictures;
+    private int currentPictureIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        // Access the database.
         mDbHelper = new PhoneBookDbAdapter(this);
         mDbHelper.open();
-        
+
+        // Show info for a single contact.
         setContentView(R.layout.contact_edit);
         setTitle(R.string.edit_contact);
-        
+
         mNameText = (EditText) findViewById(R.id.name);
         mRingIdSpinner = (Spinner) findViewById(R.id.ring_id);
         mPictureImage = (ImageView) findViewById(R.id.picture);
-        
+
         Button confirmButton = (Button) findViewById(R.id.confirm);
         Button pictureEraseButton = (Button) findViewById(R.id.contact_picture_erase);
         Button pictureNextButton = (Button) findViewById(R.id.contact_picture_next);
 
+        // Get contact ID from saved state, if possible.
         mRowId = (savedInstanceState == null) ? null :
             (Long) savedInstanceState.getSerializable(PhoneBookDbAdapter.KEY_ROWID);
-		if (mRowId == null) {
-			Bundle extras = getIntent().getExtras();
-			mRowId = extras != null ? extras.getLong(PhoneBookDbAdapter.KEY_ROWID)
-									: null;
-		}
-		
-		availablePictures = new int[] {
+        if (mRowId == null) {
+            // Otherwise, get contact ID from intent extras.
+            Bundle extras = getIntent().getExtras();
+            mRowId = extras != null ? extras.getLong(PhoneBookDbAdapter.KEY_ROWID)
+                                    : null;
+        }
+
+        // Provide a fixed collection of pictures that can be assigned to
+        // contacts by this application. When selected, the picture is stored
+        // in the contact record in PNG format.
+        availablePictures = new int[] {
                 R.drawable.woman1,
-		        R.drawable.man1,
-		        R.drawable.man2,
+                R.drawable.man1,
+                R.drawable.man2,
                 R.drawable.woman2,
                 R.drawable.woman3,
-		        R.drawable.man3,
-		};
-		currentPictureIndex = 0;
-		
-		// Populate ring_id spinner
+                R.drawable.man3,
+        };
+        currentPictureIndex = 0;
+
+        // Populate ring_id spinner with a list of amusing ring tones.
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.ringtones, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mRingIdSpinner.setAdapter(adapter);
-		
-		populateFields();
 
+        // Load contact record from the database into the member views.
+        populateFields();
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +97,7 @@ public class ContactEdit extends Activity {
                 erasePicture();
             }
         });
-        
+
         pictureNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -96,24 +106,24 @@ public class ContactEdit extends Activity {
             }
         });
     }
-    
+
     private void erasePicture()
     {
         pictureChanged = true;
         showPicture(null);
     }
-    
+
     private void nextPicture()
     {
         currentPictureIndex = (currentPictureIndex + 1) % availablePictures.length;
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), availablePictures[currentPictureIndex]);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        
+
         pictureChanged = true;
         showPicture(stream.toByteArray());
     }
-    
+
     private void showPicture(byte picture[])
     {
         this.picture = picture;
@@ -126,10 +136,10 @@ public class ContactEdit extends Activity {
             mPictureImage.setVisibility(View.GONE);
         }
     }
-    
+
     private void populateFields() {
         pictureChanged = false;
-        
+
         if (mRowId == null) {
             mNameText.setText("");
             mRingIdSpinner.setSelection(0);
@@ -140,17 +150,17 @@ public class ContactEdit extends Activity {
             startManagingCursor(contact);
             mNameText.setText(contact.getString(
                     contact.getColumnIndexOrThrow(PhoneBookDbAdapter.KEY_NAME)));
-            
+
             int ring_id_index = contact.getColumnIndexOrThrow(PhoneBookDbAdapter.KEY_RING_ID);
             int picture_index = contact.getColumnIndexOrThrow(PhoneBookDbAdapter.KEY_PICTURE);
-            
+
             if (contact.isNull(ring_id_index) || contact.getInt(ring_id_index) + 1 >= mRingIdSpinner.getCount()) {
                 mRingIdSpinner.setSelection(0);
             }
             else {
                 mRingIdSpinner.setSelection(contact.getInt(ring_id_index) + 1);
             }
-            
+
             if (contact.isNull(picture_index))
                 showPicture(null);
             else
@@ -186,10 +196,11 @@ public class ContactEdit extends Activity {
             if (id > 0) {
                 mRowId = id;
             }
-        } else {
+        }
+        else {
             mDbHelper.updateContact(mRowId, name, ring_id);
         }
-        
+
         // Update a BLOB column only when necessary.
         if (pictureChanged) {
             mDbHelper.updateContactPicture(mRowId, picture);
