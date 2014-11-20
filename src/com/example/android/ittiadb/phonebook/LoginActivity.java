@@ -44,7 +44,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     private String mSyncHost;
     private String mSyncConnection;
     private String mUsername;
-    private int mReplicationAddress;
     private String mPassword;
 
     // UI references.
@@ -183,7 +182,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     private void finishLogin(Intent intent) {
-        mReplicationAddress = intent.getIntExtra(IttiaDbSyncAdapter.KEY_REPLICATION_ADDRESS, IttiaDbDatabase.REP_ADDRESS_NONE);
+        final int replicationAddress = intent.getIntExtra(IttiaDbSyncAdapter.KEY_REPLICATION_ADDRESS, IttiaDbDatabase.REP_ADDRESS_NONE);
         final String userName = intent.getStringExtra(IttiaDbSyncAdapter.KEY_USER_NAME);
         final int peerAddress = intent.getIntExtra(IttiaDbSyncAdapter.KEY_PEER_ADDRESS, IttiaDbDatabase.REP_ADDRESS_NONE);
         final String peerUri = intent.getStringExtra(IttiaDbSyncAdapter.KEY_PEER_URI);
@@ -209,7 +208,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         }
 
         // Save connection details in the account for the sync adapter.
-        mAccountManager.setUserData(account, IttiaDbSyncAdapter.KEY_REPLICATION_ADDRESS, Integer.toString(mReplicationAddress));
+        mAccountManager.setUserData(account, IttiaDbSyncAdapter.KEY_REPLICATION_ADDRESS, Integer.toString(replicationAddress));
         mAccountManager.setUserData(account, IttiaDbSyncAdapter.KEY_USER_NAME, userName);
         mAccountManager.setUserData(account, IttiaDbSyncAdapter.KEY_PEER_ADDRESS, Integer.toString(peerAddress));
         mAccountManager.setUserData(account, IttiaDbSyncAdapter.KEY_PEER_URI, peerUri);
@@ -241,9 +240,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
             try {
                 final String uri = mSyncProtocol + "://" + mSyncHost + "/" + mSyncConnection;
+                final int replicationAddress = getIntent().getIntExtra(EXTRA_REPLICATION_ADDRESS, IttiaDbDatabase.REP_ADDRESS_NONE);
 
                 // Authenticate with ittiasync server.
-                data = IttiaDbSyncAdapter.requestAccess(uri, mUsername, mPassword, mReplicationAddress);
+                data = IttiaDbSyncAdapter.requestAccess(uri, mUsername, mPassword, replicationAddress);
                 data.putString(PARAM_USER_PASS, mPassword);
             }
             catch (Exception ex) {
