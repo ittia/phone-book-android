@@ -27,7 +27,7 @@ public class PhoneBookDbAdapter {
     // The Android emulator maps 10.0.2.2 to the host's 127.0.0.1 adapter.
     // When deploying to an actual device, replace it with the host's network
     // host name or IP address.
-    private static final String PEER_URI = "idb+tcp://10.0.2.2/backend1";
+    private static final String PEER_URI = "idb+tcp://10.0.2.2/";
 
     private Context mCtx;
 
